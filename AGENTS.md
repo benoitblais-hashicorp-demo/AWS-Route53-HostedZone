@@ -4,7 +4,7 @@ This file provides instructions for AI coding agents working on this Terraform P
 
 ## Project Overview
 
-This project provisions and manages an AWS Route 53 Hosted Zone using Terraform. It handles DNS records and configurations for the domain, ensuring infrastructure as code practices are followed for cloud DNS management.
+This project manages DNS records for an existing public AWS Route 53 Hosted Zone and provisions a private local Route 53 Hosted Zone for internal DNS resolution. It ensures infrastructure as code practices are followed for cloud DNS management.
 
 ## Module and Repository Structure
 
