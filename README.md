@@ -4,12 +4,14 @@ Code to configure and manage DNS records and domain settings in AWS Route 53.
 <!-- BEGIN_TF_DOCS -->
 # AWS Route 53 Hosted Zone
 
-This code is used to manage DNS records for an existing AWS Route 53 hosted zone.
+This code is used to manage DNS records for an existing public AWS Route 53 hosted zone and create a private local Route 53 hosted zone for internal network resolution.
 
 ## Permissions
 
 To provision the AWS resources managed by this code, the IAM role or user running Terraform needs permissions such as:
 
+- `route53:CreateHostedZone`
+- `route53:DeleteHostedZone`
 - `route53:GetHostedZone`
 - `route53:ChangeResourceRecordSets`
 - `route53:ListResourceRecordSets`
@@ -33,6 +35,7 @@ Use dynamic provider credentials via OpenID Connect (OIDC) for secure, short-liv
 When using GitHub Actions, configure OIDC via the `aws-actions/configure-aws-credentials` action.
 
 - **Using GitHub Actions**
+
   ```yaml
   - name: Configure AWS credentials
     uses: aws-actions/configure-aws-credentials@v4
@@ -46,6 +49,7 @@ When using GitHub Actions, configure OIDC via the `aws-actions/configure-aws-cre
 For local development or environments not supporting OIDC, use static IAM programmatic access keys.
 
 - **Inside the provider block**
+
   ```hcl
   provider "aws" {
     region     = "ca-central-1"
@@ -60,8 +64,9 @@ For local development or environments not supporting OIDC, use static IAM progra
 
 ## Features
 
-- Looks up an existing AWS Route 53 Hosted Zone.
-- Configures a CAA record to exclusively allow Let's Encrypt and GlobalSign to issue SSL/TLS certificates for the domain and its subdomains.
+- Looks up an existing public AWS Route 53 Hosted Zone.
+- Provisions a private local AWS Route 53 Hosted Zone attached to a specified VPC.
+- Configures a CAA record to exclusively allow Let's Encrypt and GlobalSign to issue SSL/TLS certificates for the public domain and its subdomains.
 - Automates creation of Let's Encrypt/GlobalSign DNS-01 ACME challenge TXT records for dynamic certificate validation.
 
 ## Documentation
@@ -80,7 +85,13 @@ No modules.
 
 ## Required Inputs
 
-No required inputs.
+The following input variables are required:
+
+### <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id)
+
+Description: (Required) The ID of the VPC to associate with the private local hosted zone.
+
+Type: `string`
 
 ## Optional Inputs
 
@@ -88,7 +99,7 @@ The following input variables are optional (have default values):
 
 ### <a name="input_acme_challenges"></a> [acme\_challenges](#input\_acme\_challenges)
 
-Description: A map of ACME DNS-01 challenges for different certificates. The key is the record prefix (e.g., '\_acme-challenge.app') and the value is a list of TXT tokens.
+Description: (Optional) A map of ACME DNS-01 challenges for different certificates. The key is the record prefix (e.g., '\_acme-challenge.app') and the value is a list of TXT tokens.
 
 Type: `map(list(string))`
 
@@ -96,7 +107,7 @@ Default: `{}`
 
 ### <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region)
 
-Description: The AWS region to deploy resources into.
+Description: (Optional) The AWS region to deploy resources into.
 
 Type: `string`
 
@@ -104,11 +115,19 @@ Default: `"ca-central-1"`
 
 ### <a name="input_domain_name"></a> [domain\_name](#input\_domain\_name)
 
-Description: The domain name for the Route 53 hosted zone.
+Description: (Optional) The domain name for the public Route 53 hosted zone.
 
 Type: `string`
 
 Default: `"benoit-blais.sbx.hashidemos.io"`
+
+### <a name="input_local_domain_name"></a> [local\_domain\_name](#input\_local\_domain\_name)
+
+Description: (Optional) The domain name for the private local Route 53 hosted zone.
+
+Type: `string`
+
+Default: `"benoit-blais.sbx.hashidemos.local"`
 
 ## Resources
 
@@ -116,11 +135,24 @@ The following resources are used by this module:
 
 - [aws_route53_record.acme_challenge](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) (resource)
 - [aws_route53_record.caa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) (resource)
-- [aws_route53_zone.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/route53_zone) (data source)
+- [aws_route53_zone.local](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_zone) (resource)
+- [aws_route53_zone.public](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/route53_zone) (data source)
 
 ## Outputs
 
 The following outputs are exported:
+
+### <a name="output_local_name_servers"></a> [local\_name\_servers](#output\_local\_name\_servers)
+
+Description: A list of name servers for the local private hosted zone.
+
+### <a name="output_local_zone_id"></a> [local\_zone\_id](#output\_local\_zone\_id)
+
+Description: The ID of the local private hosted zone.
+
+### <a name="output_local_zone_name"></a> [local\_zone\_name](#output\_local\_zone\_name)
+
+Description: The name of the local private hosted zone.
 
 ### <a name="output_name_servers"></a> [name\_servers](#output\_name\_servers)
 
@@ -132,7 +164,7 @@ Description: The ID of the hosted zone.
 
 ### <a name="output_zone_name"></a> [zone\_name](#output\_zone\_name)
 
-Description: The name of the hosted zone.
+Description: The name of the public hosted zone.
 
 <!-- markdownlint-enable -->
 ## External Documentation

@@ -4,7 +4,7 @@ This file provides instructions for AI coding agents working on this Terraform P
 
 ## Project Overview
 
-This project provisions and manages an AWS Route 53 Hosted Zone using Terraform. It handles DNS records and configurations for the domain, ensuring infrastructure as code practices are followed for cloud DNS management.
+This project manages DNS records for an existing public AWS Route 53 Hosted Zone and provisions a private local Route 53 Hosted Zone for internal DNS resolution. It ensures infrastructure as code practices are followed for cloud DNS management.
 
 ## Module and Repository Structure
 
@@ -48,6 +48,7 @@ Organize your Terraform project as follows:
 ## README_header.md
 
 When editing or creating `docs/README_header.md`, ensure it contains:
+
 - A description of the general purpose of the code.
 - A `Permissions` section containing the permissions required to provision resources for each provider.
 - An `Authentications` section containing the authentication details required for each provider.
@@ -56,6 +57,7 @@ When editing or creating `docs/README_header.md`, ensure it contains:
 ## README_footer.md
 
 When editing or creating `docs/README_footer.md`, ensure it contains:
+
 - An `External Documentation` section providing links to relevant external documentation used to develop the code (e.g., Terraform AWS Provider docs and AWS Route 53 documentation).
 
 ## Code Guidelines

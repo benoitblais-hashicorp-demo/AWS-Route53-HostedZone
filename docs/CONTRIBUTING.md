@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your interest in contributing! This repository uses **Terraform** to manage DNS records for an existing AWS Route 53 Hosted Zone. Please review these guidelines before contributing.
+Thank you for your interest in contributing! This repository uses **Terraform** to manage DNS records for an existing public AWS Route 53 Hosted Zone and provision a private local Hosted Zone for internal resolution. Please review these guidelines before contributing.
 
 ## Architecture Paradigm: HCP Terraform Workspaces
 

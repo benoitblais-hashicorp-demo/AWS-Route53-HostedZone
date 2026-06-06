@@ -1,11 +1,13 @@
 # AWS Route 53 Hosted Zone
 
-This code is used to manage DNS records for an existing AWS Route 53 hosted zone.
+This code is used to manage DNS records for an existing public AWS Route 53 hosted zone and create a private local Route 53 hosted zone for internal network resolution.
 
 ## Permissions
 
 To provision the AWS resources managed by this code, the IAM role or user running Terraform needs permissions such as:
 
+- `route53:CreateHostedZone`
+- `route53:DeleteHostedZone`
 - `route53:GetHostedZone`
 - `route53:ChangeResourceRecordSets`
 - `route53:ListResourceRecordSets`
@@ -29,6 +31,7 @@ Use dynamic provider credentials via OpenID Connect (OIDC) for secure, short-liv
 When using GitHub Actions, configure OIDC via the `aws-actions/configure-aws-credentials` action.
 
 - **Using GitHub Actions**
+
   ```yaml
   - name: Configure AWS credentials
     uses: aws-actions/configure-aws-credentials@v4
@@ -42,6 +45,7 @@ When using GitHub Actions, configure OIDC via the `aws-actions/configure-aws-cre
 For local development or environments not supporting OIDC, use static IAM programmatic access keys.
 
 - **Inside the provider block**
+
   ```hcl
   provider "aws" {
     region     = "ca-central-1"
@@ -56,6 +60,7 @@ For local development or environments not supporting OIDC, use static IAM progra
 
 ## Features
 
-- Looks up an existing AWS Route 53 Hosted Zone.
-- Configures a CAA record to exclusively allow Let's Encrypt and GlobalSign to issue SSL/TLS certificates for the domain and its subdomains.
+- Looks up an existing public AWS Route 53 Hosted Zone.
+- Provisions a private local AWS Route 53 Hosted Zone attached to a specified VPC.
+- Configures a CAA record to exclusively allow Let's Encrypt and GlobalSign to issue SSL/TLS certificates for the public domain and its subdomains.
 - Automates creation of Let's Encrypt/GlobalSign DNS-01 ACME challenge TXT records for dynamic certificate validation.
