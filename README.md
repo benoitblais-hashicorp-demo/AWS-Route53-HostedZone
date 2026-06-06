@@ -35,6 +35,7 @@ Use dynamic provider credentials via OpenID Connect (OIDC) for secure, short-liv
 When using GitHub Actions, configure OIDC via the `aws-actions/configure-aws-credentials` action.
 
 - **Using GitHub Actions**
+
   ```yaml
   - name: Configure AWS credentials
     uses: aws-actions/configure-aws-credentials@v4
@@ -48,6 +49,7 @@ When using GitHub Actions, configure OIDC via the `aws-actions/configure-aws-cre
 For local development or environments not supporting OIDC, use static IAM programmatic access keys.
 
 - **Inside the provider block**
+
   ```hcl
   provider "aws" {
     region     = "ca-central-1"
